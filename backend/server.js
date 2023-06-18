@@ -33,9 +33,23 @@ io.on("connection",(socket)=>{
         socket.to(msg_data.room).emit("receive_message",msg_data);
 
     })
-    socket.on("disconnect",()=>{
-        console.log("User Disconnected",socket.id);
-    })
+    // socket.on("disconnect",()=>{
+    //     console.log("User Disconnected",socket.id);
+    // })
+    socket.emit("me", socket.id)
+
+	socket.on("disconnect", () => {
+         console.log("User Disconnected",socket.id);
+		socket.broadcast.emit("callEnded")
+	})
+
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	})
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
 })
 app.use('/api/v1/users',user);
 io.on("connect",socket=>{});

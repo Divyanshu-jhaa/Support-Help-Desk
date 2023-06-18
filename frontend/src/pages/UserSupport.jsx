@@ -7,6 +7,7 @@ const UserSupport = (props) => {
     let { socket } = props;
     const location = useLocation();
     const [req, setReq] = useState([]);
+    const [currUser, setcurrUser] = useState({});
     const user = JSON.parse(localStorage.getItem('user'));
     const [room, setRoom] = useState('');
     const fetchReq = async () => {
@@ -19,6 +20,20 @@ const UserSupport = (props) => {
             console.log(res.data)
             setReq(res.data);
 
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    const fetchUser = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/api/v1/users/getCurrUser", {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            });
+            console.log(res.data);
+
+            setcurrUser(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -43,13 +58,12 @@ const UserSupport = (props) => {
 
     }
     useEffect(() => {
+        fetchUser();
+    }, [])
+    useEffect(() => {
         fetchReq();
     }, [room])
-    // useEffect(() => {
-    //     if (location.pathname == '/usersupport') {
-    //         socket = io.connect("http://localhost:5000");
-    //     }
-    // }, [location.pathname])
+
 
 
     return (
@@ -58,8 +72,27 @@ const UserSupport = (props) => {
 
 
             <div className='w-[100vw] sm:items-center md:items-start mt-[1rem] flex justify-center sm:flex-col md:flex-row '>
-                <div className='rounded sm:w-[90vh] md:w-[25%] m-[3px] bg-gray-400 h-[30rem] p-[1rem]'>
-                    Profile
+                <div className='rounded sm:w-[90vh] md:w-[25%] m-[3px] bg-gray-400  p-[2rem] flex-col flex  items-center'>
+
+                    <div class="flex-shrink-0 h-[8rem] w-[8rem] rounded-full bg-gray-300"></div>
+
+                    <div class="grid grid-cols-2 gap-2 w-[100%] place-items-center text-xl  font-mono mt-[2rem]">
+                        <div className='font-bold'>Name:</div>
+
+                        <div>{currUser.name}</div>
+                        <div className='font-bold'>Username:</div>
+
+                        <div>{currUser.username}</div>
+                        <div className='font-bold'>Email:</div>
+
+                        <div>{currUser.email}</div>
+                        <div className='font-bold'>Phone Number:</div>
+
+                        <div>{currUser.phone_no}</div>
+                    </div>
+
+
+
 
 
                 </div>

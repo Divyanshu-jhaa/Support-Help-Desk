@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Authentication from "./pages/Authentication";
 import Admin from "./pages/Admin";
 import User from "./pages/User";
+import Videocall from "./pages/Videocall";
 import Chatbot from "./pages/Chatbot/Chatbot";
 import UserSupport from "./pages/UserSupport";
 import io from "socket.io-client"
@@ -19,7 +20,9 @@ function App() {
         <Route path="/authentication" element={<Authentication/>}/>
         <Route path="/admin" element={<Admin/>}/>
         <Route path="/user" element={<User socket={socket}/>}/>
-           <Route path="/usersupport" element={<UserSupport socket={socket}/>}/>
+        <Route path="/usersupport" element={<UserSupport socket={socket}/>}/>
+        <Route path="/videocall" element={<Videocall socket={socket}/>}/>
+      
 
       </Routes>
     </>

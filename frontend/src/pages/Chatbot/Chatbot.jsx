@@ -4,7 +4,7 @@ import Chatright from './Chatright'
 import Chatstart from './Chatstart';
 // import io from "socket.io-client"
 import axios from 'axios';
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 const Chatbot = (props) => {
     const { room, socket } = props;
@@ -13,6 +13,7 @@ const Chatbot = (props) => {
     const [currentmsg, setCurrentmsg] = useState({ chat_flag: "", msg: "", room: "", date: "", profile_image: "", username: "" });
     const user = JSON.parse(localStorage.getItem('user'));
     const [currUser, setcurrUser] = useState({});
+    const navigate = useNavigate();
 
 
     const handleSend = async () => {
@@ -25,6 +26,7 @@ const Chatbot = (props) => {
         setchat([...chat, {
             ...msg_data, chat_flag: '1'
         }]);
+        setCurrentmsg({ ...currentmsg, msg: "" });
         console.log(chat);
 
         if (msg_data.room) {
@@ -54,7 +56,7 @@ const Chatbot = (props) => {
     }
     const handleSupport = async (support_flag) => {
         try {
-            const res = await axios.post("http://localhost:5000/api/v1/support/addSupport", { support_flag: support_flag }, {
+            const res = await axios.post("http://localhost:5000/api/v1/support/addSupport", { support_flag: support_flag, socket_id: socket }, {
                 headers: {
                     Authorization: `Bearer ${user.token}`
                 }
@@ -67,6 +69,8 @@ const Chatbot = (props) => {
                 setchat([...chat, { chat_flag: '0', msg: "Our Customer support will contact you shortly.", room: "", date: ` ${new Date(Date.now()).getHours()}:${new Date(Date.now()).getMinutes()}` }])
                 if (support_flag === '0') {
                     joinRoom(currUser.name, currUser.username);
+                } else if (support_flag === '1') {
+                    navigate('/videocall');
                 }
             }
         } catch (e) {
@@ -131,7 +135,7 @@ const Chatbot = (props) => {
                         </div>
 
                         <div class="bg-gray-300 p-4 flex-row">
-                            <input class="items-center h-10 w-[80%]  rounded px-3 text-sm" type="text" placeholder="Type your message…" onChange={(e) => {
+                            <input value={currentmsg.msg} class="items-center h-10 w-[80%]  rounded px-3 text-sm" type="text" placeholder="Type your message…" onChange={(e) => {
                                 setCurrentmsg({ ...currentmsg, msg: e.target.value })
                             }} />
                             <button className='bg-blue-500 w-[20%] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' onClick={() => {

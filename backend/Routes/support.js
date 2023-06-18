@@ -24,7 +24,7 @@ router.post('/addSupport',(req,res)=>{
             res.status(500).send(error);
         }else{
             if(result.rowCount==0){
-                client.query(`insert into support (s_id,name,username,email,phone_no,support_flag) values('${s_id}','${req.user.name}','${req.user.username}','${req.user.email}','${req.user.phone_no}','${data.support_flag}')`,(error,result)=>{
+                client.query(`insert into support (s_id,name,username,email,phone_no,support_flag,socket_id) values('${s_id}','${req.user.name}','${req.user.username}','${req.user.email}','${req.user.phone_no}','${data.support_flag}','${data.socket_id}')`,(error,result)=>{
         if(error){
             res.status(500).send(error);
         }else{
