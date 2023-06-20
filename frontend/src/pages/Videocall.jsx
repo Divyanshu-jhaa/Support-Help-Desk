@@ -29,6 +29,7 @@ const Videocall = () => {
     const location = useLocation();
     const [id, setid] = useState('');
     const [called, setcalled] = useState(false);
+    const navigate = useNavigate();
     // console.log(location.state);
     // console.log("the guest user stream is", userVideo.current.srcObject);
     // console.log("the curretn user stream is", myVideo.current.srcObject);
@@ -49,14 +50,15 @@ const Videocall = () => {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             setStream(stream)
             myVideo.current.srcObject = stream
+            window.localStream = stream;
         })
 
-        socket.on("callUser", (data) => {
-            setReceivingCall(true)
-            setCaller(data.from)
-            setName(data.name)
-            setCallerSignal(data.signal)
-        })
+        // socket.on("callUser", (data) => {
+        //     setReceivingCall(true)
+        //     setCaller(data.from)
+        //     setName(data.name)
+        //     setCallerSignal(data.signal)
+        // })
     }, [])
 
     const callUser = (id) => {
@@ -108,7 +110,14 @@ const Videocall = () => {
     }
     const leaveCall = () => {
         setCallEnded(true)
-        connectionRef.current.destroy()
+        console.log(window.localStream);
+        window.localStream.getTracks().forEach(track => track.stop());
+        if (location.state.designation == '0') {
+            navigate('/user')
+        } else if (location.state.designation == '1') {
+            navigate('/usersupport');
+        }
+        // connectionRef.current.destroy()
     }
 
     return (
@@ -116,7 +125,8 @@ const Videocall = () => {
             <div className='w-screen h-screen flex justify-center items-center flex-col md:justify-normal md:items-start md:flex-row bg-[#28282B]'>
                 <div className='fixed w-screen h-screen flex'>
                     <div className=' w-[14rem] h-[10rem]  m-[1rem] z-10'>
-                        <video playsInline autoPlay ref={myVideo} className=' rounded-lg'></video>
+                        {!callEnded && <video playsInline autoPlay ref={myVideo} className=' rounded-lg'></video>}
+
 
                     </div>
                     <div className=''>

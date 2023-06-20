@@ -52,20 +52,22 @@ const UserSupport = (props) => {
         }
     }
     const handleReq = async (req_id, name, username, email, socket_id) => {
+        try {
+            const res = axios.post("http://localhost:5000/api/v1/support/delete", { email: email, support_flag: req_id }, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            })
+
+
+        } catch (e) {
+            console.log(e);
+
+        }
         if (req_id == '0') {
-            try {
-                const res = axios.post("http://localhost:5000/api/v1/support/delete", { email: email }, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`
-                    }
-                })
-                joinRoom(name, username);
-                setRoom(`${name}@${username}`);
+            joinRoom(name, username);
+            setRoom(`${name}@${username}`);
 
-            } catch (e) {
-                console.log(e);
-
-            }
         } else if (req_id == '1') {
             joinRoom(name, username);
 

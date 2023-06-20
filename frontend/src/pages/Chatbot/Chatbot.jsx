@@ -78,7 +78,7 @@ const Chatbot = (props) => {
                     joinRoom(currUser.name, currUser.username);
                 } else if (support_flag === '1') {
                     joinRoom(currUser.name, currUser.username);
-                    navigate("/videocall", { state: { id: null, designation: '0' } });
+
                 }
             }
         } catch (e) {
@@ -116,13 +116,14 @@ const Chatbot = (props) => {
     // }
     useEffect(() => {
         fetchUser();
-        // socket.on("callUser", (data) => {
-        //     // console.log("the received signal in user is", data.signal);
-        //     setReceivingCall(true)
-        //     setCaller(data.from)
-        //     setName(data.name)
-        //     setCallerSignal(data.signal)
-        // })
+        socket.on("callUser", (data) => {
+            // console.log("the received signal in user is", data.signal);
+            setReceivingCall(true)
+            setCaller(data.from)
+            setName(data.name)
+            setCallerSignal(data.signal)
+            navigate('/videocall', { state: { id: null, designation: '0' } });
+        })
     }, [])
 
     useEffect(() => {
@@ -131,6 +132,7 @@ const Chatbot = (props) => {
             setchat([...chat, msg_data]);
         })
     }, [chat])
+
 
 
 

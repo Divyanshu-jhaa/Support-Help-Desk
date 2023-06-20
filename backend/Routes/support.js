@@ -41,7 +41,7 @@ router.post('/addSupport',(req,res)=>{
 router.post('/delete',(req,res)=>{
     const data=req.body;
     // res.send(data);
-    client.query(`delete from support where email='${data.email}'`,(error,result)=>{
+    client.query(`delete from support where email='${data.email}' and support_flag='${data.support_flag}'`,(error,result)=>{
         if(error){
             res.status(500).send(error);
         }else{
