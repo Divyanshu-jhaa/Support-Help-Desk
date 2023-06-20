@@ -19,7 +19,7 @@ router.post('/addSupport',(req,res)=>{
     const data=req.body;
     const s_id = crypto.randomUUID()
     // res.send(data);
-    client.query(`select * from support where email='${req.user.email}'`,(error,result)=>{
+    client.query(`select * from support where email='${req.user.email}' and support_flag='${data.support_flag}'`,(error,result)=>{
         if(error){
             res.status(500).send(error);
         }else{

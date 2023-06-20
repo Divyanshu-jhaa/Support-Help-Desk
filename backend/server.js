@@ -20,13 +20,20 @@ const io=new Server(server,{
        
     },
 });
+const users={};
 io.on("connection",(socket)=>{
     console.log(socket.id);
     socket.on("join_room",(data)=>{
-        socket.join(data);
-        console.log(`User with id ${socket.id} joined the room ${data}`)
+        socket.join(data.room);
+        users[data.username]=socket.id;
+        console.log(`User with id ${socket.id} joined the room ${data.room}`)
+        console.log(users);
 
     })
+    socket.on("getUsers",()=>{
+        socket.emit("users",users);
+    })
+ 
     socket.on("send_message",(msg_data)=>{
         console.log(msg_data);
         console.log("send message called",msg_data.room);
@@ -40,7 +47,7 @@ io.on("connection",(socket)=>{
 
 	socket.on("disconnect", () => {
          console.log("User Disconnected",socket.id);
-		socket.broadcast.emit("callEnded")
+		// socket.broadcast.emit("callEnded")
 	})
 
 	socket.on("callUser", (data) => {
@@ -48,6 +55,8 @@ io.on("connection",(socket)=>{
 	})
 
 	socket.on("answerCall", (data) => {
+        // console.log(data.signal);
+        // console.log(data.to);
 		io.to(data.to).emit("callAccepted", data.signal)
 	})
 })

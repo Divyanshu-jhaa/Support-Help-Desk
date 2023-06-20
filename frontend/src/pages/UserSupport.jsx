@@ -1,15 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import axios from 'axios'
 import Chatbot from './Chatbot/Chatbot'
-
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { VideoCallContext } from '../contexts/VideoCallContext'
+import Peer from "simple-peer"
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 const UserSupport = (props) => {
     let { socket } = props;
     const location = useLocation();
+    const navigate = useNavigate();
     const [req, setReq] = useState([]);
     const [currUser, setcurrUser] = useState({});
     const user = JSON.parse(localStorage.getItem('user'));
     const [room, setRoom] = useState('');
+    //video call states
+    const { callAccepted, setCallAccepted, stream, setStream, myVideo, userVideo, connectionRef, setName, setCallerSignal, setReceivingCall, setCaller } = useContext(VideoCallContext);
+    // const [callAccepted, setCallAccepted] = useState(false)
+    // const [stream, setStream] = useState()
+    // const myVideo = useRef()
+    // const userVideo = useRef()
+    // const connectionRef = useRef()
+
+    const joinRoom = (name, username) => {
+        socket.emit("join_room", { room: `${name}@${username}`, username: currUser.username });//need to fix here (need the username of the current user!!);
+    }
     const fetchReq = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/v1/support/getSupport", {
@@ -38,7 +51,7 @@ const UserSupport = (props) => {
             console.log(e);
         }
     }
-    const handleReq = async (req_id, name, username, email) => {
+    const handleReq = async (req_id, name, username, email, socket_id) => {
         if (req_id == '0') {
             try {
                 const res = axios.post("http://localhost:5000/api/v1/support/delete", { email: email }, {
@@ -46,20 +59,77 @@ const UserSupport = (props) => {
                         Authorization: `Bearer ${user.token}`
                     }
                 })
-                socket.emit("join_room", `${name}@${username}`);
+                joinRoom(name, username);
                 setRoom(`${name}@${username}`);
 
             } catch (e) {
                 console.log(e);
 
             }
+        } else if (req_id == '1') {
+            joinRoom(name, username);
+
+            socket.emit("getUsers");
+            socket.on("users", (users) => {
+                console.log("it workded!!");
+                console.log(users);
+                navigate('/videocall', { state: { id: users[username], designation: '1', name: name } });
+            })
+
+
+
         }
 
 
     }
     useEffect(() => {
         fetchUser();
+        // socket.on("callUser", (data) => {
+
+        //     setReceivingCall(true)
+        //     setCaller(data.from)
+        //     setName(data.name)
+        //     setCallerSignal(data.signal)
+        // })
     }, [])
+    // //video call functinalities
+    // const callUser = (name, username) => {
+    //     // socket.emit("join_room", `${name}@${username}`);
+    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+    //         // console.log("the support stream is", stream);
+    //         setStream(stream)
+    //         myVideo.current.srcObject = stream
+    //     }).catch((e) => console.log(e));
+    //     const peer = new Peer({
+    //         initiator: true,
+    //         trickle: false,
+    //         stream: stream
+    //     })
+    //     peer.on("signal", (data) => {
+    //         console.log("this is the support signal peer!!")
+    //         socket.emit("callUser", {
+    //             userToCall: "uo9FSxkeptLsESr4AAAJ",
+    //             signalData: data,
+    //             from: "w2VzHwSBQKIEq0DSAAAH",
+    //             name: name
+    //         })
+    //     })
+    //     peer.on("stream", (stream) => {
+    //         console.log("this is the support ", stream);
+
+    //         userVideo.current.srcObject = stream
+
+    //     })
+    //     socket.on("callAccepted", (signal) => {
+    //         console.log("niceeeeee");
+    //         // console.log("the support signal is ", signal);
+    //         setCallAccepted(true)
+    //         peer.signal(signal)
+    //     })
+    //     connectionRef.current = peer
+    //     navigate('/videocall');
+    // }
+
     useEffect(() => {
         fetchReq();
     }, [room])
@@ -129,13 +199,13 @@ const UserSupport = (props) => {
 
                                         <td class="p-3">
                                             {x.support_flag === '0' && <button class="bg-green-400 text-gray-50 min-w-[5rem] rounded-md p-[10px]" onClick={() => {
-                                                handleReq(x.support_flag, x.name, x.username, x.email)
+                                                handleReq(x.support_flag, x.name, x.username, x.email, x.socket_id)
                                             }}>Chat</button>}
                                             {x.support_flag === '1' && <button class="bg-yellow-400 text-gray-50  rounded-md p-[10px] min-w-[5rem]" onClick={() => {
-                                                handleReq(x.support_flag, x.name, x.username, x.email)
+                                                handleReq(x.support_flag, x.name, x.username, x.email, x.socket_id)
                                             }}>Video call</button>}
                                             {x.support_flag === '2' && <button class="bg-red-400 text-gray-50 min-w-[5rem] rounded-md p-[10px]" onClick={() => {
-                                                handleReq(x.support_flag, x.name, x.username, x.email)
+                                                handleReq(x.support_flag, x.name, x.username, x.email, x.socket_id)
                                             }}>Call</button>}
 
                                         </td>
