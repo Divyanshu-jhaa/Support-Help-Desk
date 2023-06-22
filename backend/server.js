@@ -2,6 +2,7 @@ const express=require('express');
 const user =require('./Routes/user');
 const questions=require('./Routes/questions');
 const support=require('./Routes/support');
+const supportHistory=require('./Routes/supportHistory');
 const cors=require('cors');
 const app=express();
 const client=require('./db');
@@ -21,6 +22,7 @@ const io=new Server(server,{
     },
 });
 const users={};
+
 io.on("connection",(socket)=>{
     console.log(socket.id);
     socket.on("join_room",(data)=>{
@@ -59,12 +61,18 @@ io.on("connection",(socket)=>{
         // console.log(data.to);
 		io.to(data.to).emit("callAccepted", data.signal)
 	})
+    socket.on("supportReq",()=>{
+        console.log("called!!!!!");
+        io.sockets.emit("refreshSupportReq");
+    })
+
 })
 app.use('/api/v1/users',user);
 io.on("connect",socket=>{});
 app.use(auth);
 app.use('/api/v1/questions',questions);
 app.use('/api/v1/support',support);
+app.use('/api/v1/history',supportHistory);
 server.listen(PORT,async()=>{
     const res=await client.connect((err)=>{
         if(err){

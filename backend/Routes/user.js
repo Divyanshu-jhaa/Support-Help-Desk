@@ -26,7 +26,7 @@ router.post('/getUserByAuth',async(req,res)=>{
                    res.status(500).send(error);
         }else{
             if(result.rowCount){
-                  const token=jwt.sign({name:result.rows[0].name,username:result.rows[0].username,email:result.rows[0].email,designation:result.rows[0].designation,profile_image:result.rows[0].profile_image},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'10d'});
+                  const token=jwt.sign({name:result.rows[0].name,username:result.rows[0].username,email:result.rows[0].email,designation:result.rows[0].designation,profile_image:result.rows[0].profile_image,phone_no:result.rows[0].phone_no},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'10d'});
             res.status(200).send({designation:result.rows[0].designation,token:token});
             }else{
                  res.status(200).send({token:null,designation:null});

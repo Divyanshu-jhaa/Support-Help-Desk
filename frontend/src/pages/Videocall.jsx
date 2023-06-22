@@ -6,26 +6,6 @@ import { VideoCallContext } from '../contexts/VideoCallContext';
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 const Videocall = () => {
     const { callAccepted, setCallAccepted, stream, setStream, myVideo, userVideo, connectionRef, callEnded, setReceivingCall, setCaller, setName, setCallerSignal, caller, callerSignal, setCallEnded, name, socket, receivingCall } = useContext(VideoCallContext);
-    // console.log(socket.id);
-    // const [me, setMe] = useState("")
-    // const [stream, setStream] = useState()
-    // const [receivingCall, setReceivingCall] = useState(false)
-    // const [caller, setCaller] = useState("")
-    // const [callerSignal, setCallerSignal] = useState()
-    // const [callAccepted, setCallAccepted] = useState(false)
-    // const [idToCall, setIdToCall] = useState("")
-    // const [callEnded, setCallEnded] = useState(false)
-    // const [name, setName] = useState("")
-    // const myVideo = useRef()
-    // const userVideo = useRef()
-    // const connectionRef = useRef()
-    // useEffect(() => {
-    //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    //         setStream(stream)
-    //         myVideo.current.srcObject = stream
-    //     })
-
-    // }, [])
     const location = useLocation();
     const [id, setid] = useState('');
     const [called, setcalled] = useState(false);
@@ -49,7 +29,9 @@ const Videocall = () => {
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
             setStream(stream)
-            myVideo.current.srcObject = stream
+            if (myVideo.current != undefined) {
+                myVideo.current.srcObject = stream
+            }
             window.localStream = stream;
         })
 
@@ -59,6 +41,9 @@ const Videocall = () => {
         //     setName(data.name)
         //     setCallerSignal(data.signal)
         // })
+
+
+
     }, [])
 
     const callUser = (id) => {
@@ -130,7 +115,7 @@ const Videocall = () => {
 
                     </div>
                     <div className=''>
-                        {callAccepted && !callEnded ?
+                        {callAccepted && !callEnded && userVideo ?
                             <video playsInline autoPlay ref={userVideo} className=' rounded-lg w-[100%] h-[100%]'></video> :
                             null}
                     </div>

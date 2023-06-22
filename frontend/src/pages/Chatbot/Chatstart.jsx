@@ -36,7 +36,7 @@ const Chatstart = (props) => {
                                 return <>
 
                                     <button class="bg-gray-300 p-3 w-[100%]  border border-black" onClick={() => {
-                                        setchat([...chat, { chat_flag: '0', msg: x.answer, room: "", date: ` ${new Date(Date.now()).getHours()}:${new Date(Date.now()).getMinutes()}`, profile_image: "", username: "" }])
+                                        setchat([...chat, { chat_flag: '0', msg: x.answer, room: "", date: ` ${new Date(Date.now()).getHours()}:${new Date(Date.now()).getMinutes()}`, profile_image: "", username: "", name: "Chatbot" }])
 
                                     }}>
                                         {x.question}

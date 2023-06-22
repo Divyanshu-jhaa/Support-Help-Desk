@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Chatleft from './Chatleft'
 import Chatright from './Chatright'
 import Chatstart from './Chatstart';
+import { BiBot } from 'react-icons/bi';
 import { VideoCallContext } from '../../contexts/VideoCallContext';
 // import io from "socket.io-client"
 import axios from 'axios';
@@ -68,12 +69,13 @@ const Chatbot = (props) => {
                     Authorization: `Bearer ${user.token}`
                 }
             });
+            socket.emit("supportReq");
             // console.log(res);
 
             if (res.status != 200) {
                 alert("Please try again!");
             } else {
-                setchat([...chat, { chat_flag: '0', msg: "Our Customer support will contact you shortly.", room: "", date: ` ${new Date(Date.now()).getHours()}:${new Date(Date.now()).getMinutes()}` }])
+                setchat([...chat, { chat_flag: '0', msg: "Our Customer support will contact you shortly.", room: "", name: "Chatbot", date: ` ${new Date(Date.now()).getHours()}:${new Date(Date.now()).getMinutes()}` }])
                 if (support_flag === '0') {
                     joinRoom(currUser.name, currUser.username);
                 } else if (support_flag === '1') {
@@ -172,7 +174,7 @@ const Chatbot = (props) => {
 
                                 } else {
                                     return <>
-                                        {x.chat_flag == '0' ? <Chatleft msg={x.msg} date={x.date} /> : <Chatright msg={x.msg} date={x.date} />}
+                                        {x.chat_flag == '0' ? <Chatleft msg={x.msg} date={x.date} name={x.name} /> : <Chatright msg={x.msg} date={x.date} name={x.name} />}
 
                                     </>
                                 }
@@ -207,9 +209,9 @@ const Chatbot = (props) => {
                 </div>}
 
                 <div className='flex w-[100%] justify-end m-[1rem]'>
-                    <button className='  flex-shrink-0 h-[4rem] w-[4rem] rounded-full bg-black' onClick={() => {
+                    <button className=' flex items-center justify-center flex-shrink-0 h-[4rem] w-[4rem] rounded-full bg-black ' onClick={() => {
                         setvis(!vis)
-                    }}></button>
+                    }}><BiBot className='text-white ' size={40}></BiBot></button>
 
                 </div>
 
